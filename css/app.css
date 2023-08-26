@@ -87,7 +87,7 @@ button {
     height: 120px;
     position: relative;
     background-color: white;
-    border-radius: 5px;
+    border-radius: 5%;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -101,7 +101,6 @@ button {
     position: absolute;
     top: 0;
     left: 0;
-    border-radius: 5%;
     background-position: 50% 50%;
     background-repeat: no-repeat;
     background-size: cover;
@@ -132,16 +131,8 @@ button {
     z-index: 1;
 }
 
-.card.opened .back::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    border-radius: 50%;
-    z-index: 0;
+.card.matched .back {
+    background-color: #f0f0f0;
 }
 
 footer {

@@ -68,23 +68,22 @@ class GameManager {
         this.boardContainer.addEventListener('click', this.turn.bind(this));
     }
 
-    revalCard(cardIndex) {
-        const selectedCard = this.boardContainer.querySelector(`.card-${cardIndex}`);
+    revealCard(cardIndex) {
+        const selectedCard = this.boardContainer.querySelector(`#card-${cardIndex}`);
         selectedCard.classList.add('opened');
         this.board[cardIndex].reveal();
     }
 
     concealCard(cardIndex) {
-        const selectedCard = this.boardContainer.querySelector(`.card-${cardIndex}`);
+        const selectedCard = this.boardContainer.querySelector(`#card-${cardIndex}`);
         selectedCard.classList.remove('opened');
         this.board[cardIndex].conceal();
     }
 
     buildCardElement(item, index) {
         const liElement = document.createElement('li');
-        liElement.setAttribute('class', `card card-${index}`);
-        liElement.setAttribute('data-item', item.value);
-        liElement.setAttribute('id', index);
+        liElement.setAttribute('class', `card`);
+        liElement.setAttribute('id', `card-${index}`);
 
         const divFrontElement = document.createElement('div');
         divFrontElement.setAttribute('class', 'front');
@@ -103,11 +102,20 @@ class GameManager {
         return this.board[this.firstCard].value === this.board[this.secondCard].value;
     }
 
-    pairMatched() {
+    async pairMatched() {
         this.matchCount += 1;
-        this.board[this.firstCard].isCardMatched = true;
-        this.board[this.secondCard].isCardMatched = true;
+        this.board[this.firstCard].isMatched = true;
+        this.board[this.secondCard].isMatched = true;
+        await this.wait(WAIT_SECONDS);
+        this.markMatchedPair();
         this.clearTurn();
+    }
+
+    markMatchedPair() {
+        const firstCard = this.boardContainer.querySelector(`#card-${this.firstCard}`);
+        firstCard.classList.add('matched');
+        const secondCard = this.boardContainer.querySelector(`#card-${this.secondCard}`);
+        secondCard.classList.add('matched');
     }
 
     wait(ms) {
@@ -123,20 +131,22 @@ class GameManager {
 
     turn(e) {
         const selectedCard = e.target.parentElement.getAttribute('id');
-        if (selectedCard === null) return;
+        const selectedCardIndex = selectedCard.split('-')[1];
+        if (selectedCardIndex === null) return;
 
-        if (this.firstCard === selectedCard) return;
+        if (this.board[selectedCardIndex].isRevealed) return;
 
-        // 이전 페어 확인 중일 때 발생하는 클릭 무시
-        if (this.flipCount > 1) return;
+        if (this.board[selectedCardIndex].isMatched) return;
 
-        this.revalCard(selectedCard);
+        if (this.flipCount > 1) return; // 이전 페어 확인 중일 때 발생하는 클릭 무시
+
+        this.revealCard(selectedCardIndex);
         this.flipCount += 1;
 
         if (this.flipCount === 1) {
-            this.firstCard = selectedCard;
+            this.firstCard = selectedCardIndex;
         } else {
-            this.secondCard = selectedCard;
+            this.secondCard = selectedCardIndex;
             this.attempts += 1;
             if (this.isCardMatched()) {
                 this.pairMatched();
