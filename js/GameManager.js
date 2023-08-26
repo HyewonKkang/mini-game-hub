@@ -12,45 +12,49 @@ class GameManager {
         this.score = 0;
         this.firstCard = undefined;
         this.secondCard = undefined;
-        this.board = [
-            { value: 'airplane' },
-            { value: 'bag' },
-            { value: 'ball' },
-            { value: 'banana' },
-            { value: 'boat' },
-            { value: 'brush' },
-            { value: 'cake' },
-            { value: 'candy' },
-            { value: 'airplane' },
-            { value: 'bag' },
-            { value: 'ball' },
-            { value: 'banana' },
-            { value: 'boat' },
-            { value: 'brush' },
-            { value: 'cake' },
-            { value: 'candy' },
-        ];
+        this.board = [];
 
         this.boardContainer = document.querySelector('.board');
+
         this.init();
         this.listen();
     }
 
     listen() {
-        document.querySelector('.reset-button').addEventListener('click', this.init.bind(this));
+        document
+            .querySelector('.reset-button')
+            .addEventListener('click', this.startNewGame.bind(this));
     }
 
     init() {
         this.clearBoard();
-        this.shuffle();
+        this.shuffleCards();
         this.buildCards();
     }
 
-    shuffle() {
+    startNewGame() {
+        this.attempts = 0;
+        this.flipCount = 0;
+        this.matchCount = 0;
+        this.score = 0;
+        this.firstCard = undefined;
+        this.secondCard = undefined;
+
+        this.init();
+    }
+
+    shuffle(arr) {
         for (let i = this.board.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [this.board[i], this.board[j]] = [this.board[j], this.board[i]];
+            [arr[i], arr[j]] = [arr[j], arr[i]];
         }
+        return arr;
+    }
+
+    shuffleCards() {
+        const symbols = new Array(32).fill().map((_, index) => index);
+        const randomSymbols = this.shuffle(symbols).slice(0, this.size * 2);
+        this.board = this.shuffle(randomSymbols.concat(randomSymbols));
     }
 
     clearBoard() {
@@ -62,7 +66,7 @@ class GameManager {
         this.board.forEach((item, index) => {
             const cardElement = this.buildCardElement(item, index);
             boardFragment.appendChild(cardElement);
-            this.board[index] = new Card(item.value, index);
+            this.board[index] = new Card(item, index);
         });
         this.boardContainer.appendChild(boardFragment);
         this.boardContainer.addEventListener('click', this.turn.bind(this));
@@ -90,7 +94,7 @@ class GameManager {
 
         const divBackElement = document.createElement('div');
         divBackElement.setAttribute('class', 'back');
-        divBackElement.style.backgroundImage = `url(images/icons/${item.value}.svg)`;
+        divBackElement.style.backgroundImage = `url(images/icons/${item}.svg)`;
 
         liElement.appendChild(divFrontElement);
         liElement.appendChild(divBackElement);
@@ -131,8 +135,10 @@ class GameManager {
 
     turn(e) {
         const selectedCard = e.target.parentElement.getAttribute('id');
+
+        if (selectedCard === null) return;
+
         const selectedCardIndex = selectedCard.split('-')[1];
-        if (selectedCardIndex === null) return;
 
         if (this.board[selectedCardIndex].isRevealed) return;
 
