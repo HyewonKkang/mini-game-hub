@@ -92,6 +92,8 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.3s;
+    transform-style: preserve-3d;
 }
 
 .card .front,
@@ -101,33 +103,28 @@ button {
     position: absolute;
     top: 0;
     left: 0;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: cover;
     border-radius: inherit;
+    backface-visibility: hidden;
 }
 
 .card .front {
-    transform: rotateY(180deg);
     border-radius: 5%;
     background-color: var(--primary);
 }
 
-.card.opened .front {
+.card.opened {
     transform: rotateY(180deg);
 }
 
 .card .back {
-    display: none;
     background-color: white;
+    transform: rotateY(180deg);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 35%;
 }
 
 .card.opened .back {
-    transform: rotateY(0deg);
-    display: block;
-    background-color: white;
-    background-repeat: no-repeat;
-    background-size: 35%;
     z-index: 1;
 }
 
@@ -153,7 +150,7 @@ footer {
     .board {
         width: 80%;
         min-height: 350px;
-        padding: 20px;
+        padding: 10px;
     }
 
     .card {
