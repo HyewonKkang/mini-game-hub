@@ -1,6 +1,12 @@
 import { Card } from './Card.js';
 
-const WAIT_SECONDS = 1000;
+const WAIT_MS = 400;
+const TIMER = 1000;
+const LEVELS = {
+    0: { size: 4, timeLimit: 30 },
+    1: { size: 6, timeLimit: 90 },
+    2: { size: 8, timeLimit: 210 },
+};
 
 class GameManager {
     constructor(level = 0) {
@@ -8,13 +14,18 @@ class GameManager {
         this.flipCount = 0;
         this.matchCount = 0;
         this.level = level;
-        this.size = level === 0 ? 4 : level === 1 ? 6 : 8;
+        this.size = LEVELS[this.level].size;
+        this.timeLimit = LEVELS[this.level].timeLimit;
+        this.timerId = null;
+        this.timeLeft = this.timeLimit;
         this.score = 0;
-        this.firstCard = undefined;
-        this.secondCard = undefined;
+        this.firstCard = null;
+        this.secondCard = null;
         this.board = [];
+        this.done = false;
 
         this.boardContainer = document.querySelector('.board');
+        this.timerElement = document.querySelector('.timer');
 
         this.init();
         this.listen();
@@ -30,17 +41,23 @@ class GameManager {
         this.clearBoard();
         this.shuffleCards();
         this.buildCards();
+        this.startTimer();
     }
 
     startNewGame() {
+        this.resetGameData();
+        this.init();
+    }
+
+    resetGameData() {
         this.attempts = 0;
         this.flipCount = 0;
         this.matchCount = 0;
         this.score = 0;
-        this.firstCard = undefined;
-        this.secondCard = undefined;
-
-        this.init();
+        this.firstCard = null;
+        this.secondCard = null;
+        this.timerId = null;
+        this.timeLeft = this.timeLimit;
     }
 
     shuffle(arr) {
@@ -110,7 +127,7 @@ class GameManager {
         this.matchCount += 1;
         this.board[this.firstCard].isMatched = true;
         this.board[this.secondCard].isMatched = true;
-        await this.wait(WAIT_SECONDS);
+        await this.wait(WAIT_MS);
         this.markMatchedPair();
         this.clearTurn();
     }
@@ -127,7 +144,7 @@ class GameManager {
     }
 
     async pairNotMatched() {
-        await this.wait(WAIT_SECONDS);
+        await this.wait(WAIT_MS);
         this.concealCard(this.firstCard);
         this.concealCard(this.secondCard);
         this.clearTurn();
@@ -139,21 +156,21 @@ class GameManager {
         if (selectedCard === null) return;
 
         const selectedCardIndex = selectedCard.split('-')[1];
+        const selectedBoardCard = this.board[selectedCardIndex];
 
-        if (this.board[selectedCardIndex].isRevealed) return;
-
-        if (this.board[selectedCardIndex].isMatched) return;
+        if (selectedBoardCard.isRevealed || selectedBoardCard.isMatched) return;
 
         if (this.flipCount > 1) return; // 이전 페어 확인 중일 때 발생하는 클릭 무시
 
         this.revealCard(selectedCardIndex);
-        this.flipCount += 1;
+        this.flipCount++;
 
         if (this.flipCount === 1) {
             this.firstCard = selectedCardIndex;
         } else {
             this.secondCard = selectedCardIndex;
-            this.attempts += 1;
+            this.attempts++;
+
             if (this.isCardMatched()) {
                 this.pairMatched();
             } else {
@@ -162,7 +179,8 @@ class GameManager {
         }
 
         if (this.matchCount === this.size) {
-            this.endGame();
+            this.stopTimer();
+            this.gameSuccess();
         }
     }
 
@@ -172,7 +190,42 @@ class GameManager {
         this.flipCount = 0;
     }
 
-    endGame() {}
+    startTimer() {
+        this.showNewTime(this.timeLimit);
+        this.timerId = setInterval(this.updateTimer.bind(this), TIMER);
+    }
+
+    updateTimer() {
+        if (this.timeLeft === 0) {
+            this.done = true;
+            this.stopTimer();
+            this.gameOver();
+        }
+
+        this.showNewTime(this.timeLeft--);
+    }
+
+    showNewTime(time) {
+        this.timerElement.innerText = this.makeTimeFormat(time);
+    }
+
+    makeTimeFormat(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+        return `${formattedMinutes}:${formattedSeconds}`;
+    }
+
+    stopTimer() {
+        if (!this.timerId) return;
+        clearInterval(this.timerId);
+        this.timerId = null;
+    }
+
+    gameSuccess() {}
+
+    gameOver() {}
 }
 
 new GameManager();
