@@ -43,6 +43,10 @@ button {
     cursor: pointer;
 }
 
+button:focus-visible {
+    outline: none;
+}
+
 .score-panel {
     display: flex;
     flex-direction: row;
@@ -144,6 +148,58 @@ footer {
 
 .github-icon {
     width: 32px;
+}
+
+.dialog {
+    border: none;
+}
+
+.dialog:focus-visible {
+    outline: none;
+}
+
+.dialog::backdrop {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.dialog-inner {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+}
+
+.dialog-inner h2 {
+    font-size: 4rem;
+    padding: 1rem 0;
+    font-family: 'Saira Stencil One', cursive;
+    color: #ff5157;
+    display: flex;
+    flex-direction: column;
+}
+
+.dialog-inner p {
+    padding: 0.2rem 0;
+    font-family: 'Handjet', cursive;
+    font-size: 1.1rem;
+    text-align: center;
+    line-height: 1.3rem;
+}
+
+.play-button {
+    background-image: url(../images/play.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    object-fit: cover;
+    width: 32px;
+    height: 32px;
+    margin: 10px;
+}
+
+.play-button svg {
+    fill: var(--secondary);
 }
 
 @media screen and (max-width: 768px) {

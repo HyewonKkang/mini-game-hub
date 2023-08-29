@@ -26,12 +26,17 @@ class GameManager {
 
         this.boardContainer = document.querySelector('.board');
         this.timerElement = document.querySelector('.timer');
+        this.dialogElement = document.querySelector('.dialog');
 
-        this.init();
         this.listen();
+        this.init();
     }
 
     listen() {
+        this.dialogElement.querySelector('.play-button').addEventListener('click', () => {
+            this.dialogElement.close();
+            this.startNewGame();
+        });
         document
             .querySelector('.reset-button')
             .addEventListener('click', this.startNewGame.bind(this));
@@ -45,6 +50,7 @@ class GameManager {
     }
 
     startNewGame() {
+        this.stopTimer();
         this.resetGameData();
         this.init();
     }
@@ -61,7 +67,7 @@ class GameManager {
     }
 
     shuffle(arr) {
-        for (let i = this.board.length - 1; i > 0; i--) {
+        for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [arr[i], arr[j]] = [arr[j], arr[i]];
         }
@@ -178,7 +184,7 @@ class GameManager {
             }
         }
 
-        if (this.matchCount === this.size) {
+        if (this.matchCount === this.size * 2) {
             this.stopTimer();
             this.gameSuccess();
         }
@@ -223,9 +229,19 @@ class GameManager {
         this.timerId = null;
     }
 
-    gameSuccess() {}
+    gameSuccess() {
+        this.dialogElement.querySelector('h2').textContent = 'You Win!';
+        this.dialogElement.querySelector('p').innerHTML = `You won in ${
+            this.timeLimit - this.timeLeft
+        } seconds, using ${this.attempts} attempts<br />PLAY ANOTHER GAME`;
+        this.dialogElement.showModal();
+    }
 
-    gameOver() {}
+    gameOver() {
+        this.dialogElement.querySelector('h2').textContent = 'GAME OVER';
+        this.dialogElement.querySelector('p').textContent = 'CLICK TO PLAY AGAIN';
+        this.dialogElement.showModal();
+    }
 }
 
 new GameManager();
