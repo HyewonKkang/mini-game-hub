@@ -1,0 +1,144 @@
+:root {
+    --blue: #3349dd;
+    --red: #cb3153;
+}
+
+body {
+    width: 40%;
+    min-width: 500px;
+    background-color: var(--white);
+    border-radius: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-size: 30px 30px;
+    background-image: linear-gradient(to right, #e4e4e4 1px, transparent 1px),
+        linear-gradient(to bottom, #e4e4e4 1px, transparent 1px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Shadows Into Light Two', cursive;
+    padding: 0 10px;
+    background-color: #f8f8f8;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-block-start: 0.3em;
+    margin-block-end: 0.3em;
+}
+
+p {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.container {
+    margin-top: 1rem;
+    padding: 0 30px;
+}
+
+.description {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3rem;
+}
+
+.restart-button {
+    background-image: url(./reset.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    object-fit: cover;
+    width: 20px;
+    height: 20px;
+}
+
+.figure-container {
+    stroke: black;
+    stroke-width: 4px;
+    stroke-linecap: round;
+}
+
+.figure-part {
+    /* display: none; */
+}
+
+.word-container {
+    margin-bottom: 2rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.word-container .letter {
+    border-bottom: 3.2px solid var(--blue);
+    color: var(--blue);
+    display: inline-flex;
+    font-size: 30px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 3px;
+    height: 50px;
+    width: 20px;
+    text-transform: uppercase;
+}
+
+.letters-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* 열 크기를 유동적으로 조정 */
+    grid-gap: 4px;
+}
+
+.letters-container button {
+    font-size: 1.8rem;
+    font-family: 'Shadows Into Light Two', cursive;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.letters-container button.clicked {
+    cursor: auto;
+}
+
+.letters-container button.correct::after,
+.letters-container button.wrong::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 65px;
+    font-family: 'Mali', cursive;
+    font-weight: 200;
+}
+
+.letters-container button.correct::after {
+    content: 'O';
+    color: var(--blue);
+}
+
+.letters-container button.wrong::after {
+    content: 'X';
+    color: var(--red);
+}
+
+button {
+    background: inherit;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    overflow: visible;
+    cursor: pointer;
+}
+
+button:focus-visible {
+    outline: none;
+    border: none;
+}

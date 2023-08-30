@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link href="./style.css" rel="stylesheet" type="text/css" />
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://hyewonkkang.github.io/mini-game-hub/hangman/" />
+        <meta property="og:title" content="Hangman" />
+        <meta property="og:image" content="https://i.esdrop.com/d/f/ooz4yBVHWn/iaPO1C45ZL.png" />
+        <meta property="og:description" content="An OOP based hangman" />
+        <meta property="og:site_name" content="Hangman" />
+        <meta property="og:locale" content="ko_KR" />
+        <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+        <title>HANGMAN</title>
+        <link rel="favicon" href="images/favicon.ico" type="image/x-icon" sizes="16x16" />
+        <link
+            rel="icon"
+            href="https://hyewonkkang.github.io/mini-game-hub/hangman/favicon.ico?v=2"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Mali:wght@200&family=Shadows+Into+Light+Two&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <h1>HANGMAN</h1>
+        <div class="description">
+            <p>ENTER A LETTER OR CLICK ALPHABET-!</p>
+            <button class="restart-button"></button>
+        </div>
+        <div class="container">
+            <svg height="250" width="400" class="figure-container">
+                <!-- Rod -->
+                <line x1="20" y1="230" x2="380" y2="230" />
+                <line x1="60" y1="20" x2="60" y2="230" />
+                <line x1="30" y1="20" x2="200" y2="20" />
+                <line x1="180" y1="20" x2="180" y2="50" />
+                <!-- Head -->
+                <circle cx="180" cy="70" r="20" class="figure-part" />
+                <!-- Body -->
+                <line x1="180" y1="90" x2="180" y2="150" class="figure-part" />
+                <!-- Arms -->
+                <line x1="180" y1="90" x2="160" y2="120" class="figure-part" />
+                <line x1="180" y1="90" x2="200" y2="120" class="figure-part" />
+                <!-- Legs -->
+                <line x1="180" y1="150" x2="160" y2="190" class="figure-part" />
+                <line x1="180" y1="150" x2="200" y2="190" class="figure-part" />
+            </svg>
+            <div class="word-container"></div>
+            <div class="letters-container"></div>
+        </div>
+        <script src="app.js"></script>
+    </body>
+</html>
