@@ -76,7 +76,7 @@ class GameManager {
 
     shuffleCards() {
         const symbols = new Array(32).fill().map((_, index) => index);
-        const randomSymbols = this.shuffle(symbols).slice(0, this.size * 2);
+        const randomSymbols = this.shuffle(symbols).slice(0, this.size ** 2 / 2);
         this.board = this.shuffle(randomSymbols.concat(randomSymbols));
     }
 
@@ -109,7 +109,7 @@ class GameManager {
 
     buildCardElement(item, index) {
         const liElement = document.createElement('li');
-        liElement.setAttribute('class', `card`);
+        liElement.setAttribute('class', `card card-${this.level}`);
         liElement.setAttribute('id', `card-${index}`);
 
         const divFrontElement = document.createElement('div');
@@ -244,4 +244,4 @@ class GameManager {
     }
 }
 
-new GameManager();
+new GameManager(1);
