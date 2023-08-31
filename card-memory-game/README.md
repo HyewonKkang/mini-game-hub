@@ -1,6 +1,6 @@
 # card memory game
 
-<img width="921" alt="image" src="https://github.com/HyewonKkang/HyewonKkang/assets/68578916/ccd2a0ec-50a9-4f81-823c-e9706f380063">
+<img width="921" alt="image" src="https://github.com/HyewonKkang/mini-game-hub/assets/68578916/1761de68-e8ad-472c-99bc-c3cdff88e97e">
 
 객체지향 패턴을 사용해 카드 메모리 퍼즐 게임을 JavaScript로 구현하였습니다. 게임은 3가지의 난이도를 제공하며, 난이도가 높아질수록 더 많은 카드 쌍을 매칭시켜야 합니다. 제한 시간 안에 모든 카드 쌍 매칭에 성공해야 합니다.
 
