@@ -214,6 +214,23 @@ footer {
     fill: var(--secondary);
 }
 
+.levels {
+    display: flex;
+    gap: 10px;
+}
+
+.levels button {
+    border-radius: 20px;
+    min-width: 50px;
+    color: #bdbdbd;
+    padding: 10px;
+    font-size: 0.9rem;
+}
+
+.levels button.selected {
+    color: var(--primary);
+}
+
 @media screen and (max-width: 768px) {
     .board {
         width: 80%;

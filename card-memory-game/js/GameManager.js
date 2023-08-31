@@ -27,9 +27,12 @@ class GameManager {
         this.boardContainer = document.querySelector('.board');
         this.timerElement = document.querySelector('.timer');
         this.dialogElement = document.querySelector('.dialog');
+        this.levelElement = document.querySelector('.level');
+        this.attemptsCountElement = document.querySelector('.attempt').querySelector('span');
 
         this.listen();
         this.init();
+        this.gameStart();
     }
 
     listen() {
@@ -37,22 +40,30 @@ class GameManager {
             this.dialogElement.close();
             this.startNewGame();
         });
+
+        document.querySelector('.reset-button').addEventListener('click', this.restart.bind(this));
+
         document
-            .querySelector('.reset-button')
-            .addEventListener('click', this.startNewGame.bind(this));
+            .querySelector('.levels')
+            .addEventListener('click', this.handleLevelChanged.bind(this));
     }
 
     init() {
+        this.changeLevel();
         this.clearBoard();
         this.shuffleCards();
         this.buildCards();
-        this.startTimer();
+    }
+
+    restart() {
+        this.dialogElement.showModal();
     }
 
     startNewGame() {
         this.stopTimer();
         this.resetGameData();
         this.init();
+        this.startTimer();
     }
 
     resetGameData() {
@@ -64,6 +75,7 @@ class GameManager {
         this.secondCard = null;
         this.timerId = null;
         this.timeLeft = this.timeLimit;
+        this.attemptsCountElement.textContent = 0;
     }
 
     shuffle(arr) {
@@ -176,6 +188,7 @@ class GameManager {
         } else {
             this.secondCard = selectedCardIndex;
             this.attempts++;
+            this.attemptsCountElement.textContent = this.attempts;
 
             if (this.isCardMatched()) {
                 this.pairMatched();
@@ -229,6 +242,12 @@ class GameManager {
         this.timerId = null;
     }
 
+    gameStart() {
+        this.dialogElement.querySelector('h2').textContent = "LET'S PLAY";
+        this.dialogElement.querySelector('p').textContent = 'SELECT A LEVEL AND START GAME';
+        this.dialogElement.showModal();
+    }
+
     gameSuccess() {
         this.dialogElement.querySelector('h2').textContent = 'You Win!';
         this.dialogElement.querySelector('p').innerHTML = `You won in ${
@@ -242,6 +261,31 @@ class GameManager {
         this.dialogElement.querySelector('p').textContent = 'CLICK TO PLAY AGAIN';
         this.dialogElement.showModal();
     }
+
+    handleLevelChanged(e) {
+        if (!e.target.id) return;
+        e.target.classList.add('selected');
+        document.querySelector(`#lv-${this.level}`).classList.remove('selected');
+        this.level = +e.target.id.slice(-1);
+    }
+
+    changeLevel() {
+        const stars = '★';
+        const emptyStars = '☆';
+        let content = '';
+        for (var i = 0; i < this.level + 1; i++) {
+            content += stars;
+        }
+        for (var i = 0; i < 2 - this.level; i++) {
+            content += emptyStars;
+        }
+
+        this.levelElement.textContent = content;
+        this.size = LEVELS[this.level].size;
+        this.timeLimit = LEVELS[this.level].timeLimit;
+        this.timerId = null;
+        this.timeLeft = this.timeLimit;
+    }
 }
 
-new GameManager(1);
+new GameManager();
