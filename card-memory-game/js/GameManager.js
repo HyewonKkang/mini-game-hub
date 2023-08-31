@@ -197,7 +197,7 @@ class GameManager {
             }
         }
 
-        if (this.matchCount === this.size * 2) {
+        if (this.matchCount === this.size ** 2 / 2) {
             this.stopTimer();
             this.gameSuccess();
         }
