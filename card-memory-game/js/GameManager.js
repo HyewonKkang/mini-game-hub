@@ -1,4 +1,4 @@
-import { Card } from './Card.js';
+import { View } from './View.js';
 
 const WAIT_MS = 400;
 const TIMER = 1000;
@@ -24,39 +24,24 @@ class GameManager {
         this.board = [];
         this.done = false;
 
-        this.boardContainer = document.querySelector('.board');
-        this.timerElement = document.querySelector('.timer');
-        this.dialogElement = document.querySelector('.dialog');
-        this.levelElement = document.querySelector('.level');
-        this.attemptsCountElement = document.querySelector('.attempt').querySelector('span');
+        this.view = new View();
 
-        this.listen();
+        this.view.listen(
+            this.startNewGame.bind(this),
+            this.gameStart.bind(this),
+            this.handleLevelChanged.bind(this),
+            this.turn.bind(this),
+        );
+
         this.init();
         this.gameStart();
     }
 
-    listen() {
-        this.dialogElement.querySelector('.play-button').addEventListener('click', () => {
-            this.dialogElement.close();
-            this.startNewGame();
-        });
-
-        document.querySelector('.reset-button').addEventListener('click', this.restart.bind(this));
-
-        document
-            .querySelector('.levels')
-            .addEventListener('click', this.handleLevelChanged.bind(this));
-    }
-
     init() {
         this.changeLevel();
-        this.clearBoard();
+        this.view.clearBoard();
         this.shuffleCards();
         this.buildCards();
-    }
-
-    restart() {
-        this.dialogElement.showModal();
     }
 
     startNewGame() {
@@ -75,7 +60,7 @@ class GameManager {
         this.secondCard = null;
         this.timerId = null;
         this.timeLeft = this.timeLimit;
-        this.attemptsCountElement.textContent = 0;
+        this.view.updateAttemptsCount(0);
     }
 
     shuffle(arr) {
@@ -92,49 +77,18 @@ class GameManager {
         this.board = this.shuffle(randomSymbols.concat(randomSymbols));
     }
 
-    clearBoard() {
-        this.boardContainer.replaceChildren();
-    }
-
     buildCards() {
-        const boardFragment = document.createDocumentFragment();
-        this.board.forEach((item, index) => {
-            const cardElement = this.buildCardElement(item, index);
-            boardFragment.appendChild(cardElement);
-            this.board[index] = new Card(item, index);
-        });
-        this.boardContainer.appendChild(boardFragment);
-        this.boardContainer.addEventListener('click', this.turn.bind(this));
+        this.board = this.view.createCards(this.board, this.level);
     }
 
     revealCard(cardIndex) {
-        const selectedCard = this.boardContainer.querySelector(`#card-${cardIndex}`);
-        selectedCard.classList.add('opened');
+        this.view.markCardAsOpened(cardIndex);
         this.board[cardIndex].reveal();
     }
 
     concealCard(cardIndex) {
-        const selectedCard = this.boardContainer.querySelector(`#card-${cardIndex}`);
-        selectedCard.classList.remove('opened');
+        this.view.markCardAsConcealed(cardIndex);
         this.board[cardIndex].conceal();
-    }
-
-    buildCardElement(item, index) {
-        const liElement = document.createElement('li');
-        liElement.setAttribute('class', `card card-${this.level}`);
-        liElement.setAttribute('id', `card-${index}`);
-
-        const divFrontElement = document.createElement('div');
-        divFrontElement.setAttribute('class', 'front');
-
-        const divBackElement = document.createElement('div');
-        divBackElement.setAttribute('class', 'back');
-        divBackElement.style.backgroundImage = `url(images/icons/${item}.svg)`;
-
-        liElement.appendChild(divFrontElement);
-        liElement.appendChild(divBackElement);
-
-        return liElement;
     }
 
     isCardMatched() {
@@ -151,10 +105,8 @@ class GameManager {
     }
 
     markMatchedPair() {
-        const firstCard = this.boardContainer.querySelector(`#card-${this.firstCard}`);
-        firstCard.classList.add('matched');
-        const secondCard = this.boardContainer.querySelector(`#card-${this.secondCard}`);
-        secondCard.classList.add('matched');
+        this.view.markCardAsMatched(this.firstCard);
+        this.view.markCardAsMatched(this.secondCard);
     }
 
     wait(ms) {
@@ -187,8 +139,7 @@ class GameManager {
             this.firstCard = selectedCardIndex;
         } else {
             this.secondCard = selectedCardIndex;
-            this.attempts++;
-            this.attemptsCountElement.textContent = this.attempts;
+            this.view.updateAttemptsCount(++this.attempts);
 
             if (this.isCardMatched()) {
                 this.pairMatched();
@@ -225,15 +176,7 @@ class GameManager {
     }
 
     showNewTime(time) {
-        this.timerElement.innerText = this.makeTimeFormat(time);
-    }
-
-    makeTimeFormat(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        const formattedMinutes = String(minutes).padStart(2, '0');
-        const formattedSeconds = String(remainingSeconds).padStart(2, '0');
-        return `${formattedMinutes}:${formattedSeconds}`;
+        this.view.updateTimer(time);
     }
 
     stopTimer() {
@@ -243,44 +186,31 @@ class GameManager {
     }
 
     gameStart() {
-        this.dialogElement.querySelector('h2').textContent = "LET'S PLAY";
-        this.dialogElement.querySelector('p').textContent = 'SELECT A LEVEL AND START GAME';
-        this.dialogElement.showModal();
+        this.view.showDialog("LET'S PLAY", 'SELECT A LEVEL AND START GAME');
     }
 
     gameSuccess() {
-        this.dialogElement.querySelector('h2').textContent = 'You Win!';
-        this.dialogElement.querySelector('p').innerHTML = `You won in ${
-            this.timeLimit - this.timeLeft
-        } seconds, using ${this.attempts} attempts<br />PLAY ANOTHER GAME`;
-        this.dialogElement.showModal();
+        this.view.showDialog(
+            'You Win!',
+            `You won in ${this.timeLimit - this.timeLeft} seconds, using ${
+                this.attempts
+            } attempts<br />PLAY ANOTHER GAME`,
+        );
     }
 
     gameOver() {
-        this.dialogElement.querySelector('h2').textContent = 'GAME OVER';
-        this.dialogElement.querySelector('p').textContent = 'CLICK TO PLAY AGAIN';
-        this.dialogElement.showModal();
+        this.view.showDialog('GAME OVER', 'CLICK TO PLAY AGAIN');
     }
 
     handleLevelChanged(e) {
         if (!e.target.id) return;
-        e.target.classList.add('selected');
-        document.querySelector(`#lv-${this.level}`).classList.remove('selected');
+        this.view.updateLevel(e.target, this.level);
         this.level = +e.target.id.slice(-1);
+        this.view.updateLevelDisplay(this.level);
+        this.changeLevel();
     }
 
     changeLevel() {
-        const stars = '★';
-        const emptyStars = '☆';
-        let content = '';
-        for (var i = 0; i < this.level + 1; i++) {
-            content += stars;
-        }
-        for (var i = 0; i < 2 - this.level; i++) {
-            content += emptyStars;
-        }
-
-        this.levelElement.textContent = content;
         this.size = LEVELS[this.level].size;
         this.timeLimit = LEVELS[this.level].timeLimit;
         this.timerId = null;
