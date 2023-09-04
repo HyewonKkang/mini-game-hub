@@ -1,13 +1,14 @@
 const wordContainer = document.querySelector('.word-container');
 const lettersContainer = document.querySelector('.letters-container');
 const restartButton = document.querySelector('.restart-button');
+const hangmanParts = document.querySelectorAll('.hangman-part');
 
 window.addEventListener('keydown', handleAlphabetPress);
 lettersContainer.addEventListener('click', handleAlphabetClick);
 restartButton.addEventListener('click', restartGame);
 
 let selectedWord = null;
-let tries = 10;
+let tries = 0;
 let gameOver = false;
 let gameSuccess = false;
 
@@ -57,7 +58,7 @@ function turn(letter) {
     if (selectedWord.includes(letter)) {
         markCorrect(letter);
     } else {
-        tries--;
+        tries++;
         markWrong(letter);
         displayHangman();
     }
@@ -82,7 +83,7 @@ function checkGameCompletion() {
         gameSuccess = true;
         showNotification();
     }
-    if (tries === 0) {
+    if (tries === 10) {
         gameOver = false;
         showNotification();
     }
@@ -98,12 +99,18 @@ function resetGameData() {
     correctLetters = [];
     wrongLetters = [];
     selectedWord = null;
-    tries = 10;
+    tries = 0;
     gameOver = false;
     gameSuccess = false;
 }
 
-function displayHangman() {}
+function displayHangman() {
+    hangmanParts.forEach((part, index) => {
+        if (index === tries) {
+            part.classList.add('visible');
+        }
+    });
+}
 
 function showNotification() {}
 

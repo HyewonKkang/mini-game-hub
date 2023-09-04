@@ -56,14 +56,18 @@ p {
     height: 20px;
 }
 
-.figure-container {
+.hangman-container {
     stroke: black;
     stroke-width: 4px;
     stroke-linecap: round;
 }
 
-.figure-part {
-    /* display: none; */
+.hangman-part {
+    display: none;
+}
+
+.visible {
+    display: block;
 }
 
 .word-container {
